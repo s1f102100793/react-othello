@@ -26,7 +26,6 @@ const Home = () => {
     // }
     setTurnColor(2 / turnColor);
 
-    
     // turnColor === setTurnColor(1) setTurnColor(2);
     setBoard(newBoard);
   };
