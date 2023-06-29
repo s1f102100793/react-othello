@@ -32,12 +32,20 @@ const Home = () => {
     if (board[y + 1] !== undefined && board[y + 1][x] === 3 - turnColor) {
       const Y = board.map((key) => key[0]);
       console.log(Y)
-      if (board[y + 2][x] >= turnColor) {
-        newBoard[y][x] = turnColor;
-        setTurnColor(2 / turnColor);
-      } else {
-        alert('そこは置けねーよバーカ！')
-      }
+      for (let i = 0; i < 9; i++) {
+        if (board[y + 1 + i] !== undefined && board[y + 1 + i][x] === turnColor) {
+          newBoard[y][x] = turnColor;
+          setTurnColor(2 / turnColor);
+        }
+        }
+      
+
+      // if (board[y + 2][x] >= turnColor) {
+      //   newBoard[y][x] = turnColor;
+      //   setTurnColor(2 / turnColor);
+      // } else {
+      //   alert('そこは置けねーよバーカ！')
+      // }
       
       // if (turnColor === 1) {
       //   setTurnColor(2);
