@@ -50,7 +50,7 @@ const Home = () => {
       for (const w of directions) {
         if (board[y + w[0]] !== undefined && board[y + w[0]][x + w[1]] === 3 - turnColor) {
           for (let i = 2; i < 9; i++) {
-            if (board[y + w[0] * i][x + w[1] * i] === 3 - turnColor ) { 
+            if (board[y + w[0] * i] !== undefined && board[y + w[0] * i][x + w[1] * i] === 3 - turnColor ) { 
               continue;
             } else if (board[y + w[0] * i] === undefined || board[y + w[0] * i][x + w[1] * i] === 0) {
               break;
