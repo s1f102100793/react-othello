@@ -3,16 +3,7 @@ import styles from './index.module.css';
 const Home = () => {
   const [turnColor, setTurnColor] = useState(1);
   const [board, setBoard] = useState([
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 3, 0, 0, 0],
-    [0, 0, 0, 1, 2, 3, 0, 0],
-    [0, 0, 3, 2, 1, 0, 0, 0],
-    [0, 0, 0, 3, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-
-    // [0, 0, 0, 0, 0, 3, 1, 1],
+    // [0, 0, 0, 0, 0, 0, 0, 0],
     // [0, 0, 0, 0, 0, 0, 0, 0],
     // [0, 0, 0, 0, 3, 0, 0, 0],
     // [0, 0, 0, 1, 2, 3, 0, 0],
@@ -20,6 +11,15 @@ const Home = () => {
     // [0, 0, 0, 3, 0, 0, 0, 0],
     // [0, 0, 0, 0, 0, 0, 0, 0],
     // [0, 0, 0, 0, 0, 0, 0, 0],
+
+    [0, 0, 0, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 3, 2, 2, 1],
+    [0, 0, 0, 0, 3, 3, 2, 1],
+    [0, 0, 0, 0, 0, 3, 3, 1],
+    [0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
   const newBoard: number[][] = JSON.parse(JSON.stringify(board));
   const directions: number[][] = [
@@ -60,7 +60,7 @@ const Home = () => {
                 for (let z = 1; z < i; z++) {
                   newBoard[y + w[0] * z][x + w[1] * z] = color;
                 }
-                setTurnColor(3 - color);
+                // setTurnColor(3 - color);
                 break;
               } else {
                 if (newBoard[y][x] === 0) {
@@ -91,25 +91,33 @@ const Home = () => {
           changeBoard(x, y, false, 3 - turnColor);
         }
       }
-      setBoard(newBoard);
-    }
-  };
+      let candidate = 0;
 
-  let candidate = 0;
+      for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+          if (newBoard[y][x] === 3) {
+            candidate++;
+          }
+        }
+      }
+      if (candidate !== 0) {
+        console.log('ゲーム続行');
+        setTurnColor(3 - turnColor);
+        setBoard(newBoard);
+      } else {
+        console.log('パス');
+        alert('パスです')
 
-  for (let y = 0; y < 8; y++) {
-    for (let x = 0; x < 8; x++) {
-      if (newBoard[y][x] === 3) {
-        candidate++;
+        for (let y = 0; y < 8; y++) {
+          for (let x = 0; x < 8; x++) {
+            changeBoard(x, y, false, turnColor);
+          }
+        }
+        setTurnColor(turnColor);
+        setBoard(newBoard);
       }
     }
-  }
-  if (candidate !== 0) {
-    console.log('ゲーム続行');
-    onClick(x, y);
-  } else {
-    console.log('パス');
-  }
+  };
 
   return (
     <div className={styles.container}>
