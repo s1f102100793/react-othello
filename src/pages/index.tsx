@@ -1,25 +1,26 @@
 import { useState } from 'react';
 import styles from './index.module.css';
+let pass = 0;
 const Home = () => {
   const [turnColor, setTurnColor] = useState(1);
   const [board, setBoard] = useState([
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 0, 0, 3, 0, 0, 0],
-    // [0, 0, 0, 1, 2, 3, 0, 0],
-    // [0, 0, 3, 2, 1, 0, 0, 0],
-    // [0, 0, 0, 3, 0, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
-    // [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 3, 0, 0, 0],
+    [0, 0, 0, 1, 2, 3, 0, 0],
+    [0, 0, 3, 2, 1, 0, 0, 0],
+    [0, 0, 0, 3, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
 
-    [0, 0, 0, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 3, 2, 2, 1],
-    [0, 0, 0, 0, 3, 3, 2, 1],
-    [0, 0, 0, 0, 0, 3, 3, 1],
-    [0, 0, 0, 0, 0, 0, 0, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 1, 1, 1, 1, 1],
+    // [0, 0, 0, 2, 2, 2, 2, 1],
+    // [0, 0, 0, 3, 3, 3, 2, 1],
+    // [0, 0, 0, 0, 0, 3, 3, 1],
+    // [0, 0, 0, 0, 0, 0, 0, 1],
+    // [0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
   const newBoard: number[][] = JSON.parse(JSON.stringify(board));
   const directions: number[][] = [
@@ -78,17 +79,20 @@ const Home = () => {
   };
 
   const onClick = (x: number, y: number) => {
+    // if (pass !== 2) {
     if (board[y][x] === 3) {
       console.log('クリック位置', x, y);
       for (let y = 0; y < 8; y++) {
         for (let x = 0; x < 8; x++) {
           newBoard[y][x] = newBoard[y][x] % 3;
+          // 3 -> 0にしている
         }
       }
       changeBoard(x, y, true, turnColor);
       for (let y = 0; y < 8; y++) {
         for (let x = 0; x < 8; x++) {
           changeBoard(x, y, false, 3 - turnColor);
+          //
         }
       }
       let candidate = 0;
@@ -100,14 +104,16 @@ const Home = () => {
           }
         }
       }
+
       if (candidate !== 0) {
         console.log('ゲーム続行');
+        pass = 0;
         setTurnColor(3 - turnColor);
         setBoard(newBoard);
       } else {
         console.log('パス');
-        alert('パスです')
-
+        pass++;
+        alert('パスです');
         for (let y = 0; y < 8; y++) {
           for (let x = 0; x < 8; x++) {
             changeBoard(x, y, false, turnColor);
@@ -116,8 +122,39 @@ const Home = () => {
         setTurnColor(turnColor);
         setBoard(newBoard);
       }
+    } else {
+      alert('置けないよん');
+      //   }
+      // } else (
+      //   console.log('ゲーム終了')
+      // )
     }
+    //
+    //       console.log("pass:",pass)
+    //
+    //       console.log("pass:",pass)
+    //       if (pass === 2) {
+    //         console.log('ゲーム終了')
+    //         alert('ゲーム終了')
+    //       }
   };
+
+  const countStones = (color: number, board: number[][]) => {
+    let count = 0;
+    for (const row of board) {
+      for (const cell of row) {
+        if (cell === color) {
+          count++;
+        }
+      }
+    }
+    return count;
+  };
+
+  const blackCount = countStones(1, board);
+  const whiteCount = countStones(2, board);
+  const countsMessage = `ユーザー${turnColor}のターン
+  黒: ${blackCount}, 白: ${whiteCount}`;
 
   return (
     <div className={styles.container}>
@@ -128,13 +165,14 @@ const Home = () => {
               {color !== 0 && (
                 <div
                   className={styles.stone}
-                  style={{ background: color === 3 ? '#555555' : color === 1 ? '#000' : '#fff' }}
+                  style={{ background: color === 3 ? '#adff2f' : color === 1 ? '#000' : '#fff' }}
                 />
               )}
             </div>
           ))
         )}
       </div>
+      <div className={styles.counts}>{countsMessage}</div>
     </div>
   );
 };
