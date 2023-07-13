@@ -34,47 +34,90 @@ export const useGame = () => {
     [1, -1],
   ];
 
+  const flipPiece = (
+    x: number,
+    y: number,
+    type: boolean,
+    color: number,
+    w: number[],
+    i: number
+  ) => {
+    if (type) {
+      newBoard[y][x] = color;
+      for (let z = 1; z < i; z++) {
+        newBoard[y + w[0] * z][x + w[1] * z] = color;
+      }
+      // setTurnColor(3 - color);
+      // break;
+    } else {
+      if (newBoard[y][x] === 0) {
+        newBoard[y][x] = 3;
+      }
+
+      // console.log('ひっくり返せる位置', y, x);
+      // console.table(newBoard);
+    }
+  };
+
+  const flipPiece2 = (x: number, y: number, type: boolean, color: number, w: number[]) => {
+    for (let i = 2; i < 9; i++) {
+      if (
+        newBoard[y + w[0] * i] !== undefined &&
+        newBoard[y + w[0] * i][x + w[1] * i] === 3 - color
+        // その隣も相手の色だったらもう一度繰り返す
+      ) {
+        continue;
+      } else if (
+        newBoard[y + w[0] * i] === undefined ||
+        newBoard[x + w[1] * i] === undefined ||
+        newBoard[y + w[0] * i][x + w[1] * i] % 3 === 0
+        // 続けていってundefinedか空白に当たったら終わり
+      ) {
+        break;
+      }
+      // それ以外の相手のコマのその先に自分と同じ色のコマがあったら
+      else {
+        flipPiece(x, y, type, color, w, i);
+      }
+    }
+  };
+
   const changeBoard = (x: number, y: number, type: boolean, color: number) => {
     if (newBoard[y][x] === 0) {
       for (const w of directions) {
         if (newBoard[y + w[0]] !== undefined && newBoard[y + w[0]][x + w[1]] === 3 - color) {
           // 隣が相手の色だったら
-          for (let i = 2; i < 9; i++) {
-            if (
-              newBoard[y + w[0] * i] !== undefined &&
-              newBoard[y + w[0] * i][x + w[1] * i] === 3 - color
-              // その隣も相手の色だったらもう一度繰り返す
-            ) {
-              continue;
-            } else if (
-              newBoard[y + w[0] * i] === undefined ||
-              newBoard[x + w[1] * i] === undefined ||
-              newBoard[y + w[0] * i][x + w[1] * i] % 3 === 0
-              // 続けていってundefinedか空白に当たったら終わり
-            ) {
-              break;
-            }
-            // それ以外の相手のコマのその先に自分と同じ色のコマがあったら
-            else {
-              if (type) {
-                newBoard[y][x] = color;
-                for (let z = 1; z < i; z++) {
-                  newBoard[y + w[0] * z][x + w[1] * z] = color;
-                }
-                // setTurnColor(3 - color);
-                break;
-              } else {
-                if (newBoard[y][x] === 0) {
-                  newBoard[y][x] = 3;
-                }
-
-                // console.log('ひっくり返せる位置', y, x);
-                // console.table(newBoard);
-              }
-            }
-          }
+          flipPiece2(x, y, type, color, w);
         }
       }
+    }
+  };
+
+  const Pass = () => {
+    let candidate = 0;
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        if (newBoard[y][x] === 3) {
+          candidate++;
+        }
+      }
+    }
+    if (candidate !== 0) {
+      console.log('ゲーム続行');
+      pass = 0;
+      setTurnColor(3 - turnColor);
+      setBoard(newBoard);
+    } else {
+      console.log('パス');
+      pass++;
+      alert('パスです');
+      for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+          changeBoard(x, y, false, turnColor);
+        }
+      }
+      setTurnColor(turnColor);
+      setBoard(newBoard);
     }
   };
 
@@ -95,33 +138,8 @@ export const useGame = () => {
           //
         }
       }
-      let candidate = 0;
 
-      for (let y = 0; y < 8; y++) {
-        for (let x = 0; x < 8; x++) {
-          if (newBoard[y][x] === 3) {
-            candidate++;
-          }
-        }
-      }
-
-      if (candidate !== 0) {
-        console.log('ゲーム続行');
-        pass = 0;
-        setTurnColor(3 - turnColor);
-        setBoard(newBoard);
-      } else {
-        console.log('パス');
-        pass++;
-        alert('パスです');
-        for (let y = 0; y < 8; y++) {
-          for (let x = 0; x < 8; x++) {
-            changeBoard(x, y, false, turnColor);
-          }
-        }
-        setTurnColor(turnColor);
-        setBoard(newBoard);
-      }
+      Pass();
     } else {
       alert('置けないよん');
       //   }
