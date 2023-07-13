@@ -156,5 +156,5 @@ export const useGame = () => {
   const countsMessage = `ユーザー${turnColor}のターン
   黒: ${blackCount}, 白: ${whiteCount}`;
 
-  return {board, countsMessage, onClick}
+  return { board, countsMessage, onClick };
 };
