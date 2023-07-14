@@ -59,24 +59,27 @@ export const useGame = () => {
     }
   };
 
+  const isContinue = (i: number, x: number, y: number, color: number, w: number[]): boolean => {
+    return (
+      newBoard[y + w[0] * i] !== undefined && newBoard[y + w[0] * i][x + w[1] * i] === 3 - color
+    );
+  };
+
+  const isBreak = (i: number, x: number, y: number, w: number[]): boolean => {
+    return (
+      newBoard[y + w[0] * i] === undefined ||
+      newBoard[x + w[1] * i] === undefined ||
+      newBoard[y + w[0] * i][x + w[1] * i] % 3 === 0
+    );
+  };
+
   const flipPiece2 = (x: number, y: number, type: boolean, color: number, w: number[]) => {
     for (let i = 2; i < 9; i++) {
-      if (
-        newBoard[y + w[0] * i] !== undefined &&
-        newBoard[y + w[0] * i][x + w[1] * i] === 3 - color
-        // その隣も相手の色だったらもう一度繰り返す
-      ) {
+      if (isContinue(i, x, y, color, w)) {
         continue;
-      } else if (
-        newBoard[y + w[0] * i] === undefined ||
-        newBoard[x + w[1] * i] === undefined ||
-        newBoard[y + w[0] * i][x + w[1] * i] % 3 === 0
-        // 続けていってundefinedか空白に当たったら終わり
-      ) {
+      } else if (isBreak(i, x, y, w)) {
         break;
-      }
-      // それ以外の相手のコマのその先に自分と同じ色のコマがあったら
-      else {
+      } else {
         flipPiece(x, y, type, color, w, i);
       }
     }
@@ -93,7 +96,7 @@ export const useGame = () => {
     }
   };
 
-  const Pass = () => {
+  const countCandidates = () => {
     let candidate = 0;
     for (let y = 0; y < 8; y++) {
       for (let x = 0; x < 8; x++) {
@@ -102,59 +105,63 @@ export const useGame = () => {
         }
       }
     }
+    return candidate;
+  };
+
+  // パスの処理を行う関数を作成します。
+  const handlePass = () => {
+    console.log('パス');
+    pass++;
+    alert('パスです');
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        changeBoard(x, y, false, turnColor);
+      }
+    }
+    setTurnColor(turnColor);
+    setBoard(newBoard);
+  };
+
+  const Pass = () => {
+    const candidate = countCandidates();
     if (candidate !== 0) {
       console.log('ゲーム続行');
       pass = 0;
       setTurnColor(3 - turnColor);
       setBoard(newBoard);
     } else {
-      console.log('パス');
-      pass++;
-      alert('パスです');
-      for (let y = 0; y < 8; y++) {
-        for (let x = 0; x < 8; x++) {
-          changeBoard(x, y, false, turnColor);
-        }
+      handlePass();
+    }
+  };
+
+  // 新しいボードのクリア処理
+  const clearNewBoard = () => {
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        newBoard[y][x] = newBoard[y][x] % 3; // 3 -> 0にしている
       }
-      setTurnColor(turnColor);
-      setBoard(newBoard);
+    }
+  };
+
+  // ボードの変更処理
+  const updateBoard = (color: number) => {
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        changeBoard(x, y, false, color);
+      }
     }
   };
 
   const onClick = (x: number, y: number) => {
-    // if (pass !== 2) {
     if (board[y][x] === 3) {
       console.log('クリック位置', x, y);
-      for (let y = 0; y < 8; y++) {
-        for (let x = 0; x < 8; x++) {
-          newBoard[y][x] = newBoard[y][x] % 3;
-          // 3 -> 0にしている
-        }
-      }
+      clearNewBoard();
       changeBoard(x, y, true, turnColor);
-      for (let y = 0; y < 8; y++) {
-        for (let x = 0; x < 8; x++) {
-          changeBoard(x, y, false, 3 - turnColor);
-          //
-        }
-      }
-
+      updateBoard(3 - turnColor);
       Pass();
     } else {
       alert('置けないよん');
-      //   }
-      // } else (
-      //   console.log('ゲーム終了')
-      // )
     }
-    //
-    //       console.log("pass:",pass)
-    //
-    //       console.log("pass:",pass)
-    //       if (pass === 2) {
-    //         console.log('ゲーム終了')
-    //         alert('ゲーム終了')
-    //       }
   };
 
   const countStones = (color: number, board: number[][]) => {
