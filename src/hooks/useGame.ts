@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-let pass = 0;
 export const useGame = () => {
+  let pass = 0;
   const [turnColor, setTurnColor] = useState(1);
   const [board, setBoard] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0],
